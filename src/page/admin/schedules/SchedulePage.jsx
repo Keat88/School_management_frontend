@@ -15,6 +15,7 @@ function SchedulePage() {
     () => [...new Set(mockSchedules.map((s) => s.class))].sort(),
     [],
   );
+  
 
   const filteredSchedules = useMemo(() => {
     return mockSchedules.filter((schedule) => {

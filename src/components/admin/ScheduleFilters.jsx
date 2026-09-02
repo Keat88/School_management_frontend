@@ -51,7 +51,7 @@ function ScheduleFilters({
         <Plus size={16} />
         Add Schedule
       </button>
-    </div>
+    </div> 
   );
 }
 

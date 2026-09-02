@@ -31,7 +31,6 @@ function ScheduleGrid({ classes, schedulesByClass, emptyMessage }) {
                 </td>
               </tr>
             )}
-
             {classes.map((cls) => (
               <tr
                 key={cls}
