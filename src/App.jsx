@@ -24,6 +24,7 @@ import BookCategoryForm from "./page/admin/book/BookCategoryForm";
 import BookCategoryView from "./page/admin/book/BookCategoryView";
 import ManageBooks from "./page/admin/book/ManageBooks";
 import BookForm from "./page/admin/book/BookForm";
+import SchedulePage from "./page/admin/schedules/SchedulePage";
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
             <Route path="/classes/:id" element={<ClassroomDetail />} />
 
             {/* Other Admin Sections */}
+           <Route path="/schedule" element={<SchedulePage/>}/>
             <Route path="/attendance" element={<AttendancePage />} />
 
             {/* for library it still not work cause not connect with api */} 
