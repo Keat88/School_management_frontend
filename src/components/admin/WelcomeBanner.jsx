@@ -10,7 +10,7 @@ function WelcomeBanner({ name }) {
     <div className="rounded-xl border border-gray-200 bg-white p-5 md:p-6 flex items-center justify-between">
       <div>
         <h2 className="text-xl md:text-2xl font-semibold text-gray-800">
-          Welcome back, {name} 👋
+          Welcome back, {name}
         </h2>
         <p className="text-sm text-gray-500 mt-1">{today}</p>
       </div>

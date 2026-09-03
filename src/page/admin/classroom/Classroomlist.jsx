@@ -2,13 +2,12 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import mockClassrooms from "../../../data/classrooms";
 import ClassroomCard from "../../../components/admin/ClassroomCard";
-
+import ClassFilter from "../../../components/admin/ClassFilter";
 function ClassroomList() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
   const handleViewDetails = (classroom) => {
-    // Adjust the destination route once a classroom detail page exists.
     navigate(`/classes/${classroom.id}`);
   };
 
@@ -26,7 +25,7 @@ function ClassroomList() {
           {mockClassrooms.length} classes
         </span>
       </div>
-
+     {<ClassFilter/>}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {mockClassrooms.map((classroom) => (
           <ClassroomCard

@@ -3,8 +3,9 @@ import { Link, Navigate, useParams } from "react-router-dom";
 import { ArrowLeft, Users, BookOpen, CalendarDays } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import classrooms from "../../data/classrooms";
-import students from "../../data/Students";
+
 import StudentTable from "./Studenttable";
+import students from "../../data/StudentsApi";
 
 function ClassroomDetail() {
   const { currentUser } = useAuth();
@@ -14,7 +15,6 @@ function ClassroomDetail() {
     () => classrooms.find((c) => String(c.id) === id),
     [id]
   );
-
   const classStudents = useMemo(() => {
     if (!classroom) return [];
     const fullClassName = `${classroom.name} - ${classroom.section}`;

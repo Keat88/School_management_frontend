@@ -2,7 +2,7 @@ function initials(name = "") {
   return name.charAt(0).toUpperCase();
 }
 
-function StudentTable({ students = [] }) {
+function StudentTable({ students = [], onView, onEdit, onDelete }) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
       <div className="overflow-x-auto">
@@ -10,6 +10,7 @@ function StudentTable({ students = [] }) {
           <thead>
             <tr className="border-b border-gray-200 bg-gray-50/60">
               <th className="px-4 py-3 font-medium text-gray-500">Student</th>
+              <th className="px-4 py-3 font-medium text-gray-500">Image</th>
               <th className="px-4 py-3 font-medium text-gray-500">Roll No.</th>
               <th className="px-4 py-3 font-medium text-gray-500">Class</th>
               <th className="px-4 py-3 font-medium text-gray-500">Gender</th>
@@ -40,15 +41,25 @@ function StudentTable({ students = [] }) {
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     <div className="h-8 w-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-semibold shrink-0">
-                      {initials(student.name)}
+                      {initials(student.student_name)}
                     </div>
                     <span className="font-medium text-gray-800 whitespace-nowrap">
-                      {student.name}
+                      {student.student_name}
                     </span>
                   </div>
                 </td>
+
+                <td className="px-4 py-2">
+                  <img
+                    src={student.student_image}
+                    alt={student.student_name}
+                    className="w-10 h-10 object-cover rounded-full"
+                  />
+                </td>
+
                 <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
-                  {student.rollNo}
+                  {student.roll_number
+}
                 </td>
                 <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
                   {student.class}
@@ -70,12 +81,27 @@ function StudentTable({ students = [] }) {
                     {student.status === "active" ? "Active" : "Inactive"}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-right whitespace-nowrap">
+                <td className="px-4 py-3 text-right whitespace-nowrap space-x-3">
                   <button
                     type="button"
-                    className="text-sm text-blue-600 hover:underline font-medium"
+                    onClick={() => onView && onView(student.id)}
+                    className="text-sm text-green-600 border border-gray-200 rounded-full px-2 hover:bg-gray-200 transform duration-200 transition-colors hover:text-green-400 font-medium"
                   >
                     View
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onEdit && onEdit(student.id)}
+                    className="text-sm text-indigo-600 border border-gray-200 rounded-full px-2 hover:bg-gray-100 transform duration-200 transition-colors hover:text-indigo-400 font-medium"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onDelete && onDelete(student.id)}
+                    className="text-sm text-red-500 border border-gray-200 rounded-full px-2 hover:bg-gray-100 transform duration-200 transition-colors hover:text-red-500 font-medium"
+                  >
+                    Delete
                   </button>
                 </td>
               </tr>

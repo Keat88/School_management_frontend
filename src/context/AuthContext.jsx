@@ -5,11 +5,7 @@ import { createContext, useContext } from "react";
 //   const { currentUser } = useContext(AuthContext);
 export const AuthContext = createContext(null);
 
-const currentUser = {
-  id: 1,
-  name: "Daniel",
-  role: "admin"
-};
+const currentUser = JSON.parse(localStorage.getItem("user"));
 
 export function AuthProvider({ children }) {
   return (

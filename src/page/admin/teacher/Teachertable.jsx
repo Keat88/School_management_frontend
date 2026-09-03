@@ -2,7 +2,7 @@ function initials(name = "") {
   return name.charAt(0).toUpperCase();
 }
 
-function TeacherTable({ teachers = [] }) {
+function TeacherTable({ teachers = [], onEditId,onDeleteId}) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
       <div className="overflow-x-auto">
@@ -10,9 +10,8 @@ function TeacherTable({ teachers = [] }) {
           <thead>
             <tr className="border-b border-gray-200 bg-gray-50/60">
               <th className="px-4 py-3 font-medium text-gray-500">Avatar</th>
-              <th className="px-4 py-3 font-medium text-gray-500">
-                Teacher Name
-              </th>
+              <th className="px-4 py-3 font-medium text-gray-500">Name</th>
+              <th className="px-4 py-3 font-medium text-gray-500">Email</th>
               <th className="px-4 py-3 font-medium text-gray-500">
                 Teacher Code
               </th>
@@ -44,21 +43,32 @@ function TeacherTable({ teachers = [] }) {
                 className="border-b border-gray-100 last:border-0 hover:bg-gray-50/60 transition-colors"
               >
                 <td className="px-4 py-3">
-                  <div className="h-8 w-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-semibold">
-                    {initials(teacher.name)}
-                  </div>
+                  {!teacher.teacher?.profile_image ? (
+                    <div className="h-8 w-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-semibold">
+                      {initials(teacher.name)}
+                    </div>
+                  ) : (
+                    <img
+                      src={teacher.teacher.profile_image}
+                      alt={teacher.name || "Teacher"}
+                      className="h-8 w-8 rounded-full object-cover border border-gray-200"
+                    />
+                  )}
                 </td>
                 <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">
                   {teacher.name}
                 </td>
                 <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
-                  {teacher.code}
+                  {teacher.email}
                 </td>
                 <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
-                  {teacher.qualification}
+                  {teacher.teacher?.teacher_code}
                 </td>
                 <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
-                  {teacher.phone}
+                  {teacher.teacher?.qualification}
+                </td>
+                <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
+                  {teacher.teacher?.phone}
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-600">
@@ -68,16 +78,18 @@ function TeacherTable({ teachers = [] }) {
                 <td className="px-4 py-3 text-right whitespace-nowrap">
                   <div className="flex items-center justify-end gap-3">
                     <button
+                    onClick={() => onEditId(teacher.id)}
                       type="button"
-                      className="text-sm text-blue-600 hover:underline font-medium"
+                      className="text-sm text-blue-600 border border-gray-200 rounded-full px-2 hover:bg-gray-100 transform duration-200 transition-colors hover:text-blue-400 font-medium"
                     >
                       Edit
                     </button>
                     <button
                       type="button"
-                      className="text-sm text-red-500 hover:underline font-medium"
+                      onClick={() => onDeleteId(teacher.id)}
+                      className="text-sm text-red-500 border border-gray-200 rounded-full px-2 hover:bg-gray-100 transform duration-200 transition-colors hover:text-red-500 font-medium"
                     >
-                      Remove
+                      Delete
                     </button>
                   </div>
                 </td>

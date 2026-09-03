@@ -1,19 +1,31 @@
 import { useContext, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Menu, X, LogOut } from "lucide-react";
 import sidebarMenu from "../../data/sideBar";
 import { AuthContext } from "../../context/AuthContext";
+import { AuthApi } from "../../data/AuthApi";
 
 function Sidebar() {
+  const navigate = useNavigate();
   const { currentUser } = useContext(AuthContext);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const visibleMenu = sidebarMenu.filter((menu) =>
-    menu.roles.includes(currentUser?.role)
+    menu.roles.includes(currentUser?.role),
   );
 
   const closeMobile = () => setIsMobileOpen(false);
-
+  const handleLogout = async () => {
+    try {
+      await AuthApi.Logout();
+    } catch (error) {
+      console.log("Logout API error, clearing local session anyway:", error);
+    } finally {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      navigate("/");
+    }
+  };
   return (
     <>
       {/* Mobile top bar */}
@@ -124,6 +136,7 @@ function Sidebar() {
             </div>
             <button
               type="button"
+              onClick={handleLogout}
               className="ml-auto p-2 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600"
               aria-label="Log out"
             >

@@ -1,6 +1,6 @@
 import { Search, Plus } from "lucide-react";
-
-function TeacherFilters({ searchValue, onSearchChange, onAddTeacher }) {
+import { NavLink } from "react-router-dom";
+function TeacherFilters({ searchValue, onSearchChange }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-3">
       <div className="relative flex-1 min-w-0">
@@ -20,15 +20,15 @@ function TeacherFilters({ searchValue, onSearchChange, onAddTeacher }) {
         />
       </div>
 
-      <button
+      <NavLink
         type="button"
-        onClick={onAddTeacher}
+        to={'/teacher/add'}
         className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 text-white text-sm
           font-medium px-4 py-2 hover:bg-blue-700 active:bg-blue-800 transition-colors shrink-0"
       >
         <Plus size={16} />
         Add Teacher
-      </button>
+      </NavLink>
     </div>
   );
 }
