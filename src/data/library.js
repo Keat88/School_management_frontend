@@ -1,7 +1,7 @@
 import { api } from "./api";
 
 export const BookCategoryApi = {
-  getAll: async (params = {}) => {
+  getAll: async (params) => {
     try {
       const response = await api.get("/library/bookcategory/index", { params });
       return response.data;
@@ -151,6 +151,16 @@ export const BookIssureApi = {
   delete: async (id) => {
     try {
       const response = await api.delete(`/library/book-issure/destroy/${id}`);
+      return response.data;
+    } catch (error) {
+      console.log("Error", error);
+    }
+  },
+  ReturnIssurce: async (id) => {
+    try {
+      const response = await api.put(`/library/book-issure/returnBook/${id}`, {
+        return_date: new Date().toISOString().split("T")[0],
+      });
       return response.data;
     } catch (error) {
       console.log("Error", error);

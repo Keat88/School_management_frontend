@@ -178,6 +178,13 @@ export default function ClassRoomForm({ item = null, onSuccess }) {
         <div className="flex justify-end pt-4">
           <button
             type="submit"
+            
+            className="px-6 py-2 bg-gray-500 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
             disabled={loading}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
           >

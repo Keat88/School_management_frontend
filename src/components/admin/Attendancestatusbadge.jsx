@@ -1,7 +1,7 @@
 const statusStyles = {
-  present: "bg-green-50 text-green-600",
-  absent: "bg-red-50 text-red-500",
-  late: "bg-orange-50 text-orange-500"
+  present: "bg-blue-50  text-blue-800",
+  absent: "bg-red-50 text-red-800",
+  late: "bg-gray-50 text-gray-800"
 };
 
 const statusLabels = {

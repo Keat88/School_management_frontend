@@ -12,7 +12,7 @@ function formatDate(dateString) {
 
 function NoticeCard({ notice, onEdit, onDelete }) {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 flex flex-col justify-between">
+    <div className="rounded-2xl border border-gray-200 bg-white p-5 flex flex-col justify-between duration-200 transition-all hover:-translate-y-0.5 hover:shadow-md">
       <div>
         <div className="flex items-start justify-between gap-3">
           <h3 className="text-base font-semibold text-gray-800">

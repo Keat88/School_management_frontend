@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Menu, X, LogOut } from "lucide-react";
+import { Menu, X, LogOut, ChevronDown } from "lucide-react";
 import sidebarMenu from "../../data/sideBar";
 import { AuthContext } from "../../context/AuthContext";
 import { AuthApi } from "../../data/AuthApi";
@@ -9,12 +9,14 @@ function Sidebar() {
   const navigate = useNavigate();
   const { currentUser } = useContext(AuthContext);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
 
   const visibleMenu = sidebarMenu.filter((menu) =>
-    menu.roles.includes(currentUser?.role),
+    menu.roles.includes(currentUser?.role)
   );
 
   const closeMobile = () => setIsMobileOpen(false);
+
   const handleLogout = async () => {
     try {
       await AuthApi.Logout();
@@ -26,6 +28,7 @@ function Sidebar() {
       navigate("/");
     }
   };
+
   return (
     <>
       {/* Mobile top bar */}
@@ -80,15 +83,66 @@ function Sidebar() {
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           <ul className="space-y-1">
             {visibleMenu.map((menu) => {
-              const Icon = menu.icon;
+              const Icon = menu.icon || (() => null);
+              const hasChildren = menu.child && menu.child.length > 0;
+              // FIX: Use menu.id instead of menu.path since Library and Hostel don't have paths
+              const isDropdownOpen = openDropdown === menu.id;
+
+              if (hasChildren) {
+                return (
+                  <li
+                    key={menu.id}
+                    className="space-y-1 relative"
+                    onMouseEnter={() => setOpenDropdown(menu.id)}
+                    onMouseLeave={() => setOpenDropdown(null)}
+                  >
+                    <div className="w-full group relative flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <Icon size={18} className="text-gray-400 group-hover:text-gray-600" />
+                        <span>{menu.title}</span>
+                      </div>
+                      <ChevronDown
+                        size={16}
+                        className={`transition-transform duration-200 text-gray-400 ${
+                          isDropdownOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </div>
+
+                    {isDropdownOpen && (
+                      <ul className="pl-9 space-y-1 py-1 bg-white">
+                        {menu.child.map((childItem) => (
+                          <li key={childItem.path}>
+                            <NavLink
+                              to={childItem.path}
+                              onClick={() => {
+                                closeMobile();
+                              }}
+                              className={({ isActive }) =>
+                                `block px-3 py-2 rounded-md text-xs font-medium transition-colors ${
+                                  isActive
+                                    ? "bg-blue-50 text-blue-600 font-semibold"
+                                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                                }`
+                              }
+                            >
+                              {childItem.title || childItem.titile}
+                            </NavLink>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              }
+
               return (
-                <li key={menu.path}>
+                <li key={menu.id}>
                   <NavLink
-                    to={menu.path}
+                    to={menu.path || ""}
                     onClick={closeMobile}
                     className={({ isActive }) =>
-                      `group relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                      ${
+                      `group relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                         isActive
                           ? "bg-blue-50 text-blue-600"
                           : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
@@ -97,10 +151,10 @@ function Sidebar() {
                   >
                     {({ isActive }) => (
                       <>
-                        {/* Blue active indicator bar */}
                         <span
-                          className={`absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r-full bg-blue-600 transition-opacity
-                          ${isActive ? "opacity-100" : "opacity-0"}`}
+                          className={`absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r-full bg-blue-600 transition-opacity ${
+                            isActive ? "opacity-100" : "opacity-0"
+                          }`}
                         />
                         <Icon
                           size={18}

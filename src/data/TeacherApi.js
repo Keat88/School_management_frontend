@@ -1,7 +1,7 @@
 import { api } from "./api";
 
 export const teacherApi = {
-  getAll: async (params = {}) => {
+  getAll: async (params) => {
     try {
       const response = await api.get("/teacher/index", { params });
       return response.data;

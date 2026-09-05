@@ -1,55 +1,66 @@
-import { useMemo, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
-import { days, mockSchedules } from "../../../data/schedules";
+import { days, SchedultApi } from "../../../data/schedules";
 import ScheduleFilters from "../../../components/admin/ScheduleFilters";
 import ScheduleGrid from "../../../components/admin/ScheduleGrid";
 
 function SchedulePage() {
   const { currentUser } = useAuth();
-
+  const navigate = useNavigate();
   const [classFilter, setClassFilter] = useState("all");
   const [dayFilter, setDayFilter] = useState("all");
+  const [schedules, setSchedules] = useState([]);
+  const [classOptions, setClassOptions] = useState([]);
+  const fetchSchedules = async (filters = {}) => {
+    try {
+      const response = await SchedultApi.getAll(filters);
+      const data = response.data || [];
+      setSchedules(data);
+      const uniqueClasses = [...new Set(data.map((s) => s.class_room).filter(Boolean))].sort();
+      if (classFilter === "all" && uniqueClasses.length > 0) {
+        setClassOptions(uniqueClasses);
+      }
+    } catch (error) {
+      console.error("Failed to fetch schedules", error);
+    }
+  };
+  useEffect(() => {
+    const params = {};
+    if (classFilter !== "all") params.class = classFilter;
+    if (dayFilter !== "all") params.day = dayFilter;
 
-  const classOptions = useMemo(
-    () => [...new Set(mockSchedules.map((s) => s.class))].sort(),
-    [],
-  );
-  
-
-  const filteredSchedules = useMemo(() => {
-    return mockSchedules.filter((schedule) => {
-      const matchesClass =
-        classFilter === "all" || schedule.class === classFilter;
-      const matchesDay = dayFilter === "all" || schedule.day === dayFilter;
-      return matchesClass && matchesDay;
-    });
+    fetchSchedules(params);
   }, [classFilter, dayFilter]);
 
-  const classes = useMemo(
-    () => [...new Set(filteredSchedules.map((s) => s.class))].sort(),
-    [filteredSchedules],
-  );
+  // Since backend handles filtering, schedules are already filtered
+  const classes = useMemo(() => {
+    return [...new Set(schedules.map((s) => s.class_room).filter(Boolean))].sort();
+  }, [schedules]);
 
+  // Group backend data by class and day for the grid
   const schedulesByClass = useMemo(() => {
-    const map = {};
-    filteredSchedules.forEach((schedule) => {
-      if (!map[schedule.class]) map[schedule.class] = {};
-      if (!map[schedule.class][schedule.day]) {
-        map[schedule.class][schedule.day] = [];
+    const grouped = {};
+    schedules.forEach((schedule) => {
+      const className = schedule.class_room;
+      const day = schedule.day;
+      if (!className || !day) return;
+
+      if (!grouped[className]) {
+        grouped[className] = {};
       }
-      map[schedule.class][schedule.day].push(schedule);
+      if (!grouped[className][day]) {
+        grouped[className][day] = [];
+      }
+      grouped[className][day].push(schedule);
     });
-    return map;
-  }, [filteredSchedules]);
+    return grouped;
+  }, [schedules]);
 
   const handleAddSchedule = () => {
-    // Hook this up to a modal / form / route once the add-schedule flow exists.
-    console.log("Add Schedule clicked");
+    navigate("/schedule-form");
   };
 
-  // Admin-only guard. For multiple admin-only pages, consider lifting
-  // this into a shared <ProtectedRoute allowedRoles={["admin"]} />.
   if (currentUser?.role !== "admin") {
     return <Navigate to="/dashboard" replace />;
   }
@@ -59,7 +70,7 @@ function SchedulePage() {
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-gray-800">Schedule</h2>
         <span className="text-sm text-gray-500">
-          {filteredSchedules.length} scheduled periods
+          {schedules.length} scheduled periods
         </span>
       </div>
 
@@ -72,7 +83,6 @@ function SchedulePage() {
         dayOptions={days}
         onAddSchedule={handleAddSchedule}
       />
-
       <ScheduleGrid
         classes={classes}
         schedulesByClass={schedulesByClass}

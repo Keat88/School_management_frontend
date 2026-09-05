@@ -12,7 +12,11 @@ export const classRoomApi = {
   },
   addNew: async (newClass) => {
     try {
-      const response = await api.post("/classroom/store", newClass);
+      const response = await api.post("/classroom/store", newClass, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return response.data;
     } catch (error) {
       console.log("Error", error);
@@ -26,17 +30,39 @@ export const classRoomApi = {
       console.log("Error", error);
     }
   },
-  upDate: async (upDateClass, id) => {
+  // upDate: async (upDateClass, id) => {
+  //   try {
+  //     const response = await api.put(`/classroom/update/${id}`, upDateClass, {
+  //       headers: {
+  //         "Content-Type": "multipart/form-data",
+  //       },
+  //     });
+  //     return response.data;
+  //   } catch (error) {
+  //     console.log("Error", error);
+  //   }
+  // },
+  // delete: async (id) => {
+  //   try {
+  //     const response = await api.post(`/classroom/destroy/${id}`);
+  //     return response.data;
+  //   } catch (error) {
+  //     console.log("Error", error);
+  //   }
+  // },
+};
+export const Year = {
+  getAll: async (paramt = {}) => {
     try {
-      const response = await api.put(`/classroom/update/${id}`, upDateClass);
+      const response = await api.get("/academic-years/index", paramt);
       return response.data;
     } catch (error) {
       console.log("Error", error);
     }
   },
-  delete: async (id) => {
+  getShow: async (id) => {
     try {
-      const response = await api.post(`/classroom/destroy/${id}`);
+      const response = await api.get(`/academic-years/show/${id}`);
       return response.data;
     } catch (error) {
       console.log("Error", error);
@@ -54,7 +80,11 @@ export const subjectApi = {
   },
   addNew: async (newSubject) => {
     try {
-      const response = await api.post("/subject/store", newSubject);
+      const response = await api.post("/subject/store", newSubject, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return response.data;
     } catch (error) {
       console.log("Error", error);
@@ -70,7 +100,11 @@ export const subjectApi = {
   },
   upDate: async (updateSubject, id) => {
     try {
-      const response = await api.put(`/subject/update/${id}`, updateSubject);
+      const response = await api.post(`/subject/update/${id}`, updateSubject, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return response.data;
     } catch (error) {
       console.log("Error", error);

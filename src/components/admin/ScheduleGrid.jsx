@@ -1,10 +1,10 @@
-import { days, periods } from "../../data/schedules";
+import { days } from "../../data/schedules";
 
 function ScheduleGrid({ classes, schedulesByClass, emptyMessage }) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[900px] text-sm text-left border-collapse">
+        <table className="w-full min-w-[900px] font-poppins text-sm text-left border-collapse">
           <thead>
             <tr className="border-b border-gray-200 bg-gray-50/60">
               <th className="px-4 py-3 font-medium text-gray-500 sticky left-0 bg-gray-50 text-left min-w-[150px]">
@@ -43,7 +43,7 @@ function ScheduleGrid({ classes, schedulesByClass, emptyMessage }) {
                 </td>
                 {days.map((day) => {
                   const dayEntries = (schedulesByClass[cls]?.[day] || []).sort(
-                    (a, b) => a.periodId - b.periodId,
+                    (a, b) => a.start_time.localeCompare(b.start_time),
                   );
                   return (
                     <td key={day} className="px-3 py-3">
@@ -53,35 +53,25 @@ function ScheduleGrid({ classes, schedulesByClass, emptyMessage }) {
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          {dayEntries.map((entry) => {
-                            const period = periods.find(
-                              (p) => p.id === entry.periodId,
-                            );
-                            return (
-                              <div
-                                key={entry.id}
-                                className="rounded-lg bg-blue-50 border border-blue-100 px-3 py-2"
-                              >
-                                <div className="flex items-center justify-between gap-2">
-                                  <span className="font-semibold text-blue-700 text-xs">
-                                    {entry.subject}
-                                  </span>
-                                  <span className="text-gray-400 text-[10px] whitespace-nowrap">
-                                    P{period?.id || "?"}
-                                  </span>
-                                </div>
-                                <div className="mt-0.5 text-gray-600 text-xs">
-                                  {entry.teacher}
-                                </div>
-                                <div className="text-gray-400 text-xs">
-                                  {period
-                                    ? `${period.start}–${period.end} · `
-                                    : ""}
-                                  {entry.room}
-                                </div>
+                          {dayEntries.map((entry) => (
+                            <div
+                              key={entry.id}
+                              className="rounded-lg border border-gray-200 px-3 py-2 group hover:shadow-sm hover:-translate-y-0.5 duration-200 transition-colors"
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="font-semibold font-roboto text-slate-800 group-hover:text-slate-600 text-xs">
+                                  {entry.subject}
+                                </span>
                               </div>
-                            );
-                          })}
+                              <div className="mt-0.5 text-gray-600 text-xs">
+                                {entry.teacher}
+                              </div>
+                              <div className="text-gray-400 text-xs">
+                                {entry.start_time?.slice(0, 5)} –{" "}
+                                {entry.end_time?.slice(0, 5)}
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       )}
                     </td>

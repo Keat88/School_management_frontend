@@ -123,7 +123,7 @@ export default function TeacherForm({ teacher: propTeacher = null, onSuccess }) 
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl border border-gray-200 shadow-sm">
+    <div className="min-w-160 mx-auto p-6 bg-white rounded-xl border border-gray-200 ">
       <h2 className="text-xl font-bold text-gray-800 mb-6">
         {isEditMode ? "Edit Teacher" : "Add New Teacher"}
       </h2>

@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Upload } from "lucide-react";
-import { BookApi } from "../../../data/library";
-
+import { BookApi, BookCategoryApi } from "../../../data/library";
 
 export default function BookForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditMode = Boolean(id);
-
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -28,13 +26,14 @@ export default function BookForm() {
   useEffect(() => {
     const loadInitialData = async () => {
       try {
-        const catRes = await BookApi.getAll();
-        setCategories(catRes.data || catRes);
-
         if (isEditMode) {
-          const bookRes = await BookApi.getShow ? await BookApi.getShow(id) : await BookApi.getAll().then(res => (res.data || res).find(b => b.id == id));
+          const bookRes = (await BookApi.getShow)
+            ? await BookApi.getShow(id)
+            : await BookApi.getAll().then((res) =>
+                (res.data || res).find((b) => b.id == id),
+              );
           const bookData = bookRes?.data || bookRes;
-          
+
           if (bookData) {
             setFormData({
               title: bookData.title || "",
@@ -63,6 +62,13 @@ export default function BookForm() {
     loadInitialData();
   }, [id, isEditMode]);
 
+  const fetchCategories = async () => {
+    const response = await BookCategoryApi.getAll();
+    setCategories(response?.data || response || response?.data.data);
+  };
+  useEffect(() => {
+    fetchCategories();
+  }, []);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -75,7 +81,6 @@ export default function BookForm() {
       setImagePreview(URL.createObjectURL(file));
     }
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -88,7 +93,7 @@ export default function BookForm() {
     data.append("book_category_id", formData.book_category_id);
     data.append("total_copies", formData.total_copies);
     data.append("available_copies", formData.available_copies);
-    
+
     if (formData.book_image instanceof File) {
       data.append("book_image", formData.book_image);
     }
@@ -99,7 +104,9 @@ export default function BookForm() {
 
     try {
       if (isEditMode) {
-        await BookApi.update ? await BookApi.update(id, data) : await BookApi.addNew(data); // Adjust based on your API setup for multipart updates
+        (await BookApi.update)
+          ? await BookApi.update(id, data)
+          : await BookApi.addNew(data); // Adjust based on your API setup for multipart updates
         setFeedback({ type: "success", text: "Book updated successfully!" });
       } else {
         await BookApi.addNew(data);
@@ -110,7 +117,9 @@ export default function BookForm() {
     } catch (error) {
       setFeedback({
         type: "error",
-        text: error.response?.data?.message || "Something went wrong. Please check your inputs.",
+        text:
+          error.response?.data?.message ||
+          "Something went wrong. Please check your inputs.",
       });
     } finally {
       setLoading(false);
@@ -126,7 +135,7 @@ export default function BookForm() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl border border-gray-200 shadow-sm space-y-6">
+    <div className="min-w-160 mx-auto p-6 bg-white rounded-xl border border-gray-200  space-y-6">
       <div className="flex justify-between items-center pb-4 border-b border-gray-100">
         <h2 className="text-xl font-bold text-gray-800">
           {isEditMode ? "Edit Book" : "Add New Book"}
@@ -156,7 +165,9 @@ export default function BookForm() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Book Title *</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Book Title *
+            </label>
             <input
               type="text"
               name="title"
@@ -168,7 +179,9 @@ export default function BookForm() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Author *</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Author *
+            </label>
             <input
               type="text"
               name="author"
@@ -183,7 +196,9 @@ export default function BookForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">ISBN</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              ISBN
+            </label>
             <input
               type="text"
               name="isbn"
@@ -194,7 +209,9 @@ export default function BookForm() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Category *</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Category *
+            </label>
             <select
               name="book_category_id"
               value={formData.book_category_id}
@@ -214,7 +231,9 @@ export default function BookForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Total Copies *</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Total Copies *
+            </label>
             <input
               type="number"
               name="total_copies"
@@ -227,7 +246,9 @@ export default function BookForm() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Available Copies *</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Available Copies *
+            </label>
             <input
               type="number"
               name="available_copies"
@@ -242,7 +263,9 @@ export default function BookForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-600 mb-1">Book Image</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Book Image
+          </label>
           <div className="flex items-center gap-4">
             {imagePreview && (
               <img
@@ -253,8 +276,15 @@ export default function BookForm() {
             )}
             <label className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-400 transition-colors">
               <Upload className="text-gray-400 mb-1" size={20} />
-              <span className="text-xs text-gray-500 font-medium">Click to upload image</span>
-              <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+              <span className="text-xs text-gray-500 font-medium">
+                Click to upload image
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+              />
             </label>
           </div>
         </div>

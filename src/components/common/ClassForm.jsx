@@ -1,27 +1,36 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {  classRoomApi } from "../../data/classrooms";
-
+import { classRoomApi, Year } from "../../data/classrooms";
 
 export default function ClassForm({ classItem: propClass = null, onSuccess }) {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const [years, setYears] = useState([]);
   const isEditMode = Boolean(propClass || id);
   const classId = propClass?.id || id;
 
   const [formData, setFormData] = useState({
     name: "",
-    start_date: "",
-    end_date: "",
-    is_current: false,
+    academic_year_id: "",
     grade: "",
     section: "",
   });
-
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(!propClass && Boolean(id));
   const [feedback, setFeedback] = useState(null);
+
+  const fetchYears = async () => {
+    try {
+      const response = await Year.getAll();
+      setYears(response?.data?.data || response?.data || response);
+    } catch (error) {
+      console.error("Failed to fetch academic years", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchYears();
+  }, []);
 
   useEffect(() => {
     if (propClass) {
@@ -48,19 +57,17 @@ export default function ClassForm({ classItem: propClass = null, onSuccess }) {
   const populateForm = (data) => {
     setFormData({
       name: data.name || "",
-      start_date: data.start_date || "",
-      end_date: data.end_date || "",
-      is_current: Boolean(data.is_current),
+      academic_year_id: data.academic_year_id || data.year_id || "",
       grade: data.grade || "",
       section: data.section || "",
     });
   };
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: value,
     }));
   };
 
@@ -68,16 +75,14 @@ export default function ClassForm({ classItem: propClass = null, onSuccess }) {
     e.preventDefault();
     setLoading(true);
     setFeedback(null);
-
     try {
       if (isEditMode) {
         await classRoomApi.upDate(formData, classId);
         setFeedback({ type: "success", text: "Class updated successfully!" });
       } else {
-        await classRoomApi.addNew(formData);
-        setFeedback({ type: "success", text: "Class added successfully!" });
+        const response = await classRoomApi.addNew(formData);
+        setFeedback({ type: "success", text: response?.message || "Class created successfully!" });
       }
-
       if (onSuccess) {
         onSuccess();
       } else {
@@ -104,7 +109,7 @@ export default function ClassForm({ classItem: propClass = null, onSuccess }) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl border border-gray-200 shadow-sm">
+    <div className="min-w-160 mx-auto p-6  rounded-xl border border-gray-200">
       <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
         <h2 className="text-xl font-bold text-gray-800">
           {isEditMode ? "Edit Class" : "Add New Class"}
@@ -112,7 +117,7 @@ export default function ClassForm({ classItem: propClass = null, onSuccess }) {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors flex items-center space-x-1"
+          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors flex items-center space-x-1 cursor-pointer"
         >
           <span>← Back</span>
         </button>
@@ -147,24 +152,30 @@ export default function ClassForm({ classItem: propClass = null, onSuccess }) {
                 onChange={handleChange}
                 required
                 maxLength={255}
-                placeholder="e.g., Mathematics 101"
+                placeholder="e.g., Grade 10 A"
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">
-                Section
+                Academic Year
               </label>
-              <input
-                type="text"
-                name="section"
-                value={formData.section}
+              <select
+                name="academic_year_id"
+                value={formData.academic_year_id}
                 onChange={handleChange}
                 required
-                placeholder="e.g., Section A"
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              >
+                <option value="">Select Academic Year</option>
+                {Array.isArray(years) &&
+                  years.map((y) => (
+                    <option key={y.id} value={y.id}>
+                      {y.name}
+                    </option>
+                  ))}
+              </select>
             </div>
 
             <div>
@@ -182,63 +193,35 @@ export default function ClassForm({ classItem: propClass = null, onSuccess }) {
               />
             </div>
 
-            <div className="flex items-center pt-6">
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="is_current"
-                  checked={formData.is_current}
-                  onChange={handleChange}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <span className="text-sm font-medium text-gray-600">
-                  Is Current Active Class
-                </span>
-              </label>
-            </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">
-                Start Date
+                Section
               </label>
               <input
-                type="date"
-                name="start_date"
-                value={formData.start_date}
+                type="text"
+                name="section"
+                value={formData.section}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                End Date
-              </label>
-              <input
-                type="date"
-                name="end_date"
-                value={formData.end_date}
-                onChange={handleChange}
-                required
+                placeholder="e.g., A"
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
         </div>
 
-        <div className="flex justify-end pt-4 space-x-3">
+        <div className="flex justify-end pt-4 space-x-3 border-t border-gray-100">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors cursor-pointer"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 cursor-pointer"
           >
             {loading ? "Saving..." : isEditMode ? "Update Class" : "Save Class"}
           </button>

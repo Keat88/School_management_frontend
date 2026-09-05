@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { studentData } from "../../data/StudentsApi";
 import { useNavigate, useParams } from "react-router-dom";
+import { ImageIcon } from "lucide-react";
+import { classRoomApi } from "../../data/classrooms";
 
 export default function StudentForm({
   student: propStudent = null,
@@ -9,11 +11,18 @@ export default function StudentForm({
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const [studentImage, setStudentImage] = useState(null);
+  const [imagePreviewStudent, setImagePreviewStudent] = useState(null);
+  const [parentImage, setParentImage] = useState(null);
+  const [imagePreviewParent, setImagePreviewParent] = useState(null);
+
   const [fetchedStudent, setFetchedStudent] = useState(null);
+
   // Support both component prop and route params (`/students/edit/:id`)
-  const student = propStudent || fetchedStudent;
+  const currentStudent = propStudent || fetchedStudent;
   const activeId = propStudent?.id || id;
   const isEdit = Boolean(activeId);
+
   const [formData, setFormData] = useState({
     mother_name: "",
     father_name: "",
@@ -30,12 +39,16 @@ export default function StudentForm({
     student_phone: "",
   });
 
-  const [parentImage, setParentImage] = useState(null);
-  const [studentImage, setStudentImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
-
-  // Fetch student data if used as a route page and no prop was passed
+  const [classRoomm, setClassRoom] = useState([]);
+  useEffect(() => {
+    const fetchClass = async () => {
+      const response = await classRoomApi.getAll();
+      setClassRoom(response?.data);
+    };
+    fetchClass();
+  }, []);
   useEffect(() => {
     if (!propStudent && id) {
       studentData
@@ -44,27 +57,55 @@ export default function StudentForm({
         .catch((error) => console.error("Failed to load student data", error));
     }
   }, [propStudent, id]);
+
   // Populate form fields when student data becomes available
   useEffect(() => {
-    if (student) {
+    if (currentStudent) {
       setFormData({
-        mother_name: student.parent?.mother_name || student.mother_name || "",
-        father_name: student.parent?.father_name || student.father_name || "",
-        occupation: student.parent?.occupation || student.occupation || "",
+        mother_name:
+          currentStudent.parent?.mother_name ||
+          currentStudent.mother_name ||
+          "",
+        father_name:
+          currentStudent.parent?.father_name ||
+          currentStudent.father_name ||
+          "",
+        occupation:
+          currentStudent.parent?.occupation || currentStudent.occupation || "",
         parent_phone:
-          student.parent?.parent_phone || student.parent_phone || "",
-        email_parent: student.parent?.email || student.email_parent || "",
-        class_id: student.class_id || "",
-        address: student.address || "",
-        gender: student.gender || "male",
-        email_student: student.email_student || student.email || "",
-        student_name: student.student_name || "",
-        date_of_birth: student.date_of_birth || "",
-        roll_number: student.roll_number || "",
-        student_phone: student.student_phone || "",
+          currentStudent.parent?.parent_phone ||
+          currentStudent.parent_phone ||
+          "",
+        email_parent:
+          currentStudent.parent?.email || currentStudent.email_parent || "",
+        class_id: currentStudent.class_id || "",
+        address: currentStudent.address || "",
+        gender: currentStudent.gender || "male",
+        email_student:
+          currentStudent.email_student || currentStudent.email || "",
+        student_name: currentStudent.student_name || "",
+        date_of_birth: currentStudent.date_of_birth || "",
+        roll_number: currentStudent.roll_number || "",
+        student_phone: currentStudent.student_phone || "",
       });
     }
-  }, [student]);
+  }, [currentStudent]);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setStudentImage(file);
+      setImagePreviewStudent(URL.createObjectURL(file));
+    }
+  };
+
+  const handleImageParentChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setParentImage(file);
+      setImagePreviewParent(URL.createObjectURL(file));
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -121,7 +162,7 @@ export default function StudentForm({
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl border border-gray-200 shadow-sm">
+    <div className="min-w-160 mx-auto p-6 bg-white rounded-xl border border-gray-200 shadow-sm">
       <h2 className="text-xl font-bold text-gray-800 mb-6">
         {isEdit ? "Edit Student" : "Add New Student"}
       </h2>
@@ -211,14 +252,20 @@ export default function StudentForm({
               <label className="block text-sm font-medium text-gray-600 mb-1">
                 Class ID
               </label>
-              <input
-                type="number"
+              <select
                 name="class_id"
                 value={formData.class_id}
                 onChange={handleChange}
-                placeholder="Enter Class ID"
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              >
+                <option >--Select class--</option>
+                {classRoomm &&
+                  classRoomm?.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.grade}-{item.section}
+                    </option>
+                  ))}
+              </select>
             </div>
 
             <div>
@@ -265,13 +312,25 @@ export default function StudentForm({
               <label className="block text-sm font-medium text-gray-600 mb-1">
                 Student Image
               </label>
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/jpg"
-                onChange={(e) => setStudentImage(e.target.files[0])}
-                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
-              />
-              <img src="" alt="" />
+              <div className="flex items-center gap-4 mt-2">
+                {imagePreviewStudent ? (
+                  <img
+                    src={imagePreviewStudent}
+                    alt="Preview"
+                    className="w-16 h-16 rounded-lg object-cover border border-gray-200 shrink-0"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-400 shrink-0">
+                    <ImageIcon size={24} />
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg"
+                  onChange={handleImageChange}
+                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 cursor-pointer"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -319,7 +378,7 @@ export default function StudentForm({
                 name="email_parent"
                 value={formData.email_parent}
                 onChange={handleChange}
-                required
+              
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -355,12 +414,25 @@ export default function StudentForm({
               <label className="block text-sm font-medium text-gray-600 mb-1">
                 Parent Image
               </label>
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/jpg"
-                onChange={(e) => setParentImage(e.target.files[0])}
-                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
-              />
+              <div className="flex items-center gap-4 mt-2">
+                {imagePreviewParent ? (
+                  <img
+                    src={imagePreviewParent}
+                    alt="Preview"
+                    className="w-16 h-16 rounded-lg object-cover border border-gray-200 shrink-0"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-400 shrink-0">
+                    <ImageIcon size={24} />
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg"
+                  onChange={handleImageParentChange}
+                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 cursor-pointer"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -371,7 +443,7 @@ export default function StudentForm({
             onClick={() => navigate(-1)}
             className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
           >
-            Cancel
+            Cancel Data
           </button>
           <button
             type="submit"

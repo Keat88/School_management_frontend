@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Plus, Search, Edit2, Trash2 } from "lucide-react";
 import { BookApi } from "../../../data/library";
-
-
 export default function ManageBooks() {
   const navigate = useNavigate();
   const [books, setBooks] = useState([]);
@@ -53,7 +51,7 @@ export default function ManageBooks() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white rounded-xl border border-gray-200 shadow-sm space-y-6">
+    <div className="w-full mx-auto space-y-6">
       <div className="flex justify-between items-center pb-4 border-b border-gray-100">
         <h2 className="text-xl font-bold text-gray-800">Manage Books</h2>
         <NavLink
@@ -80,7 +78,7 @@ export default function ManageBooks() {
       {/* Filter / Search Form */}
       <form
         onSubmit={handleSearchSubmit}
-        className="grid grid-cols-1 md:grid-cols-4 gap-3 bg-gray-50 p-4 rounded-xl border border-gray-100"
+        className="grid grid-cols-1 md:grid-cols-4 gap-3 bg-gray-50 rounded-xl"
       >
         <div className="relative">
           <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
@@ -133,7 +131,7 @@ export default function ManageBooks() {
       </form>
 
       {/* Books Table */}
-      <div className="overflow-x-auto border border-gray-100 rounded-lg">
+      <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase">
@@ -193,7 +191,7 @@ export default function ManageBooks() {
                   </td>
                   <td className="py-3 px-4 text-right space-x-1">
                     <button
-                      onClick={() => navigate(`/books/edit/${book.id}`)}
+                      onClick={() => navigate(`/library/book/add/${book.id}`)}
                       className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors inline-block"
                       title="Update"
                     >

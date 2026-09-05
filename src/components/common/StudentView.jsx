@@ -27,7 +27,7 @@ export default function StudentView({ student: propStudent = null }) {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl border border-gray-200 shadow-sm text-center text-gray-500">
+      <div className="min-w-160 mx-auto p-6 bg-white rounded-xl border border-gray-200 shadow-sm text-center text-gray-500">
         Loading student details...
       </div>
     );
@@ -61,7 +61,7 @@ export default function StudentView({ student: propStudent = null }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl border border-gray-200 shadow-sm space-y-6">
+    <div className="min-w-160 mx-auto p-6 bg-white rounded-xl border border-gray-200 space-y-6">
       <div className="flex justify-between items-center pb-4 border-b border-gray-100">
         <h2 className="text-xl font-bold text-gray-800">Student Details</h2>
         <button

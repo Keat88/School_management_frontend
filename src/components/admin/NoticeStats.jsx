@@ -9,11 +9,11 @@ const accentStyles = {
 
 function StatTile({ label, value, icon: Icon, accent }) {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 flex items-center gap-4">
+    <div className="rounded-2xl border border-gray-200 bg-white p-5 group flex items-center gap-4 duration-200 transition-transform hover:-translate-y-0.5 hover:shadow-md">
       <div
         className={`h-11 w-11 rounded-xl flex items-center justify-center shrink-0 ${accentStyles[accent]}`}
       >
-        <Icon size={20} />
+        <Icon size={20} className="group-hover:scale-110 duration-200 transition-all" />
       </div>
       <div className="min-w-0">
         <p className="text-sm text-gray-500 truncate">{label}</p>

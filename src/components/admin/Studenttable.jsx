@@ -85,21 +85,21 @@ function StudentTable({ students = [], onView, onEdit, onDelete }) {
                   <button
                     type="button"
                     onClick={() => onView && onView(student.id)}
-                    className="text-sm text-green-600 border border-gray-200 rounded-full px-2 hover:bg-gray-200 transform duration-200 transition-colors hover:text-green-400 font-medium"
+                    className="text-sm border border-gray-200 rounded-full px-2 py-1 hover:bg-gray-200 transform duration-200 transition-colors hover:text-green-400 font-medium"
                   >
                     View
                   </button>
                   <button
                     type="button"
                     onClick={() => onEdit && onEdit(student.id)}
-                    className="text-sm text-indigo-600 border border-gray-200 rounded-full px-2 hover:bg-gray-100 transform duration-200 transition-colors hover:text-indigo-400 font-medium"
+                    className="text-sm text-indigo-600 border border-gray-200 rounded-full px-2 py-1 hover:bg-gray-100 transform duration-200 transition-colors hover:text-indigo-400 font-medium"
                   >
                     Edit
                   </button>
                   <button
                     type="button"
                     onClick={() => onDelete && onDelete(student.id)}
-                    className="text-sm text-red-500 border border-gray-200 rounded-full px-2 hover:bg-gray-100 transform duration-200 transition-colors hover:text-red-500 font-medium"
+                    className="text-sm text-red-500 border border-gray-200 rounded-full px-2 py-1 hover:bg-gray-100 transform duration-200 transition-colors hover:text-red-500 font-medium"
                   >
                     Delete
                   </button>

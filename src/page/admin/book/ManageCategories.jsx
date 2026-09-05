@@ -3,7 +3,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { Plus, Search, Eye, Edit2, Trash2 } from "lucide-react";
 import { BookCategoryApi } from "../../../data/library";
 
-
 export default function ManageCategories() {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
@@ -14,7 +13,9 @@ export default function ManageCategories() {
   const fetchCategories = async (searchTerm = "") => {
     setLoading(true);
     try {
-      const res = await BookCategoryApi.getAll(searchTerm);
+      const res = await BookCategoryApi.getAll({
+        search: searchTerm,
+      });
       setCategories(res.data || res);
     } catch (error) {
       setCategories([]);
@@ -37,7 +38,8 @@ export default function ManageCategories() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this category?")) return;
+    if (!window.confirm("Are you sure you want to delete this category?"))
+      return;
     try {
       await BookCategoryApi.delete(id);
       setFeedback({ type: "success", text: "Category deleted successfully!" });
@@ -51,9 +53,11 @@ export default function ManageCategories() {
   };
 
   return (
-    <div className="min-w-160 mx-auto p-6 bg-white rounded-xl border border-gray-200 shadow-sm">
+    <div className="min-w-160 mx-auto">
       <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-        <h2 className="text-xl font-bold text-gray-800">Manage Book Categories</h2>
+        <h2 className="text-xl font-bold text-gray-800">
+          Manage Book Categories
+        </h2>
         <NavLink
           to="/library/category/add"
           className="flex items-center gap-2 rounded-lg bg-blue-600 text-white text-sm font-medium px-4 py-2 hover:bg-blue-700 transition-colors"
@@ -119,20 +123,28 @@ export default function ManageCategories() {
             ) : (
               categories.map((cat) => (
                 <tr key={cat.id} className="hover:bg-gray-50/50">
-                  <td className="py-3 px-4 font-medium text-gray-800">{cat.book_category}</td>
+                  <td className="py-3 px-4 font-medium text-gray-800">
+                    {cat.book_category}
+                  </td>
                   <td className="py-3 px-4 text-gray-500">
-                    {cat.created_at ? new Date(cat.created_at).toLocaleDateString() : "-"}
+                    {cat.created_at
+                      ? new Date(cat.created_at).toLocaleDateString()
+                      : "-"}
                   </td>
                   <td className="py-3 px-4 text-right space-x-1">
                     <button
-                      onClick={() => navigate(`/library/category/view/:${cat.id}`)}
+                      onClick={() =>
+                        navigate(`/library/category/view/:${cat.id}`)
+                      }
                       className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors inline-block"
                       title="View"
                     >
                       <Eye size={16} />
                     </button>
                     <button
-                      onClick={() => navigate(`/book-categories/edit/${cat.id}`)}
+                      onClick={() =>
+                        navigate(`/library/category/add/${cat.id}`)
+                      }
                       className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors inline-block"
                       title="Update"
                     >

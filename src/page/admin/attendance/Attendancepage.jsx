@@ -8,7 +8,6 @@ import AttendanceTable from "../../../components/admin/Attendancetable";
 
 const TODAY = new Date().toISOString().slice(0, 10);
 
-// Replace with real API data once available.
 const mockAttendance = [
   {
     id: 1,
@@ -116,13 +115,23 @@ function AttendancePage() {
         icon: CheckCircle2,
         accent: "green",
       },
-      { label: "Absent", value: absentCount, icon: XCircle, accent: "orange" },
-      { label: "Late", value: lateCount, icon: Clock3, accent: "purple" },
+      {
+        label: "Absent",
+        value: absentCount,
+        icon: XCircle,
+        accent: "orange",
+      },
+      {
+        label: "Late",
+        value: lateCount,
+        icon: Clock3,
+        accent: "purple",
+      },
       {
         label: "Attendance Rate",
         value: `${rate}%`,
         icon: Percent,
-        accent: "blue",
+        accent: "blue ",
       },
     ];
   }, [filteredRecords]);
@@ -138,7 +147,6 @@ function AttendancePage() {
       <h2 className="text-xl font-semibold text-gray-800">Attendance</h2>
 
       <StatsGrid stats={summary} />
-
       <AttendanceFilters
         dateValue={dateValue}
         onDateChange={setDateValue}
